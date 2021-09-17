@@ -12,9 +12,10 @@ private const val EXTRA_TEAM_A_SCORE = "wpi.mjforte.cs4518assignment2.teamAScore
 private const val EXTRA_TEAM_B_SCORE = "wpi.mjforte.cs4518assignment2.teamBScore"
 private const val EXTRA_DID_SAVE = "wpi.mjforte.cs4518assignment2.didSave"
 
-public const val SAVE_ACTIVITY_CODE = 111
+const val SAVE_ACTIVITY_CODE = 111
 
 class SaveActivity : AppCompatActivity() {
+
 
     companion object {
         fun newIntent(packageContext: Context, teamAScore: Int, teamBScore: Int): Intent {

@@ -1,12 +1,11 @@
 package wpi.mjforte.cs4518assignment2
 
-import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import kotlin.math.acos
 
-class BasketballController(activity: MainActivity, private val state: BasketballState) {
+class BasketballController(view: View, private val state: BasketballState) {
 
     val TEAM_A = "team_a"
     val TEAM_B = "team_b"
@@ -27,15 +26,15 @@ class BasketballController(activity: MainActivity, private val state: Basketball
             R.id.buttonTeamBThreePoints to TeamPointMapping(TEAM_B, 3),
         )
         for (pair in buttonIDMap) {
-            activity.findViewById<Button>(pair.key).setOnClickListener{
+            view.findViewById<Button>(pair.key).setOnClickListener{
                 handlePointButtonPress(pair.value.team, pair.value.points)
             }
         }
-        activity.findViewById<Button>(R.id.buttonReset).setOnClickListener{
+        view.findViewById<Button>(R.id.buttonReset).setOnClickListener{
             handleResetButtonPress()
         }
-        teamALabel = activity.findViewById(R.id.pointsTeamA)
-        teamBLabel = activity.findViewById(R.id.pointsTeamB)
+        teamALabel = view.findViewById(R.id.pointsTeamA)
+        teamBLabel = view.findViewById(R.id.pointsTeamB)
         updateActivity()
         Log.d("BasketballController", "Init Controller Done")
     }
