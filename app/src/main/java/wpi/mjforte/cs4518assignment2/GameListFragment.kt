@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,7 +46,7 @@ class GameListFragment : Fragment() {
     private inner class GameHolder(view: View) : RecyclerView.ViewHolder(view) {
         val dateLabel = view.findViewById<TextView>(R.id.gameDate)
         val teamScores = view.findViewById<TextView>(R.id.teamScores)
-
+        val imageScores = view.findViewById<ImageView>(R.id.teamImage)
     }
 
     private inner class GameAdapter(var games: List<BasketballGame>) : RecyclerView.Adapter<GameHolder>() {
@@ -60,6 +61,11 @@ class GameListFragment : Fragment() {
                 Log.d(TAG, "Loading game ${game.id}")
                 holder.dateLabel.text = "Game: ${game.id}\t${game.time}"
                 holder.teamScores.text = "${game.teamAName}:${game.teamAScore}\t${game.teamBName}:${game.teamBScore}"
+                if (game.teamAScore > game.teamBScore) {
+                    holder.imageScores.setImageResource(R.mipmap.ic_capybara)
+                } else {
+                    holder.imageScores.setImageResource(R.mipmap.ic_qokka)
+                }
             }
         }
 
