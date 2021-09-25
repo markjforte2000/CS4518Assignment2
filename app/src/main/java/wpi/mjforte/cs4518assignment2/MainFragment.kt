@@ -65,28 +65,23 @@ class MainFragment : Fragment() {
                 model.setNameTeamB(p0.toString())
             }
         })
-//        Thread {
-//            for (i in 0..150) {
-//                val game = BasketballGame(
-//                    UUID.randomUUID(),
-//                    0, 0,
-//                    "Team A", "Team B",
-//                    Calendar.getInstance().time
-//                )
-//                BasketballRepository.get().saveGame(game)
-//            }
-//            Log.d(TAG, "Done saving 150 games")
-//        }.start()
         BasketballController(view, model)
         view.findViewById<Button>(R.id.buttonSave).setOnClickListener {
-            Thread {
-                val game = model.toGame()
-                Log.d(TAG, "Saving game ${game.id}")
-                BasketballRepository.get().saveGame(game)
-                Log.d(TAG, "Saved game ${game.id}")
-            }.start()
+            saveGame(model)
+        }
+        view.findViewById<Button>(R.id.buttonDisplay).setOnClickListener {
+            saveGame(model)
         }
         return view
+    }
+
+    private fun saveGame(model: BasketballState) {
+        Thread {
+            val game = model.toGame()
+            Log.d(TAG, "Saving game ${game.id}")
+            BasketballRepository.get().saveGame(game)
+            Log.d(TAG, "Saved game ${game.id}")
+        }.start()
     }
 
     override fun onStart() {
