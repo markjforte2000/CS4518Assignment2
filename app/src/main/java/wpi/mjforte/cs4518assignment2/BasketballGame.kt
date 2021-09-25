@@ -1,14 +1,14 @@
 package wpi.mjforte.cs4518assignment2
 
-import java.util.*
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import  java.util.*
 
-class BasketballGame(teamAScore: Int, teamBScore: Int, teamAName: String, teamBName: String, id: Int, ) {
-
-    val teamAScore: Int = teamAScore
-    val teamBScore: Int = teamBScore
-    val teamAName: String = teamAName
-    val teamBName: String = teamBName
-    val id: Int = id
-    val time: Date = Calendar.getInstance().time
+@Entity(tableName = "table_game")
+class BasketballGame(@PrimaryKey val id: UUID = UUID.randomUUID(),
+                     val teamAScore: Int, val teamBScore: Int,
+                     val teamAName: String, val teamBName: String,
+                     val date: Date)
+{
 
 }

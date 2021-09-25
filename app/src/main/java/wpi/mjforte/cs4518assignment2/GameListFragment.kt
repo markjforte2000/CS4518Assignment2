@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -20,10 +21,6 @@ class GameListFragment : Fragment() {
     private val gameListViewModel : GameListViewModel by viewModels()
     private var adapter : GameAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "Loading ${gameListViewModel.games.size} games")
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,12 +30,24 @@ class GameListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_game_list, container, false)
         recyclerView = view.findViewById(R.id.game_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        updateUI()
+        recyclerView.adapter = adapter
         return view
     }
 
-    private fun updateUI() {
-        val games = gameListViewModel.games
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        gameListViewModel.gameListLiveData.observe(
+            viewLifecycleOwner,
+            { games ->
+                games?.let {
+                    Log.i(TAG, "Got games: ${games.size}")
+                    updateUI(games)
+                }
+            }
+        )
+    }
+
+    private fun updateUI(games: List<BasketballGame>) {
         adapter = GameAdapter(games)
         recyclerView.adapter = adapter
     }
@@ -59,7 +68,7 @@ class GameListFragment : Fragment() {
             val game = games[position]
             holder.apply {
                 Log.d(TAG, "Loading game ${game.id}")
-                holder.dateLabel.text = "Game: ${game.id}\t${game.time}"
+                holder.dateLabel.text = "Game: ${game.id}\t${game.date}"
                 holder.teamScores.text = "${game.teamAName}:${game.teamAScore}\t${game.teamBName}:${game.teamBScore}"
                 if (game.teamAScore > game.teamBScore) {
                     holder.imageScores.setImageResource(R.mipmap.ic_capybara)
