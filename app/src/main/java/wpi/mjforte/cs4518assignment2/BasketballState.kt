@@ -94,4 +94,13 @@ class BasketballState : ViewModel() {
         )
     }
 
+    fun loadGame(game: BasketballGame) {
+        id.value = game.id
+        scoreTeamA.value = game.teamAScore
+        scoreTeamB.value = game.teamBScore
+        nameTeamA.value = game.teamAName
+        nameTeamB.value = game.teamBName
+        date.value = game.date
+    }
+
 }

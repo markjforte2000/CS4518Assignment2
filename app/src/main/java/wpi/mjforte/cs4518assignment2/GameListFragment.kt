@@ -1,5 +1,7 @@
 package wpi.mjforte.cs4518assignment2
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,8 +16,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 const val TAG = "WPIGameListFragment"
+private val WINNING_TEAM_NAME : String = "wpi.mjforte.cs4518assignment2.winning_team_name"
 
 class GameListFragment : Fragment() {
+
+    companion object {
+        fun newBundle(winningTeam: String): Bundle {
+            val bundle = Bundle()
+            bundle.putString(WINNING_TEAM_NAME, winningTeam)
+            return bundle
+        }
+        fun getWinningTeamName(bundle: Bundle): String {
+            return bundle.getString(WINNING_TEAM_NAME, "Team A")
+        }
+    }
 
     private lateinit var recyclerView: RecyclerView
     private val gameListViewModel : GameListViewModel by viewModels()
@@ -45,6 +59,7 @@ class GameListFragment : Fragment() {
                 }
             }
         )
+        Log.d(TAG, "Winning Team: ${arguments?.let { getWinningTeamName(it) }}")
     }
 
     private fun updateUI(games: List<BasketballGame>) {
@@ -56,6 +71,18 @@ class GameListFragment : Fragment() {
         val dateLabel = view.findViewById<TextView>(R.id.gameDate)
         val teamScores = view.findViewById<TextView>(R.id.teamScores)
         val imageScores = view.findViewById<ImageView>(R.id.teamImage)
+        var game: BasketballGame? = null
+        init {
+            view.setOnClickListener {
+                val fragment = MainFragment()
+                val fg = activity!!.supportFragmentManager
+                val args = game?.let { it1 -> MainFragment.newBundle(it1) }
+                fragment.arguments = args
+                fg.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit()
+            }
+        }
     }
 
     private inner class GameAdapter(var games: List<BasketballGame>) : RecyclerView.Adapter<GameHolder>() {
@@ -75,6 +102,7 @@ class GameListFragment : Fragment() {
                 } else {
                     holder.imageScores.setImageResource(R.mipmap.ic_qokka)
                 }
+                holder.game = game
             }
         }
 

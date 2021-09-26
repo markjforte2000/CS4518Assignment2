@@ -27,8 +27,13 @@ class BasketballRepository private constructor(context: Context) {
     }
 
     fun saveGame(game: BasketballGame) {
-        basketballDAO.saveGame(game.id, game.teamAScore, game.teamBScore, game.teamAName, game.teamBName, game.date)
+        if (basketballDAO.doesGameExist(game.id)) {
+            basketballDAO.updateGame(game.id, game.teamAScore, game.teamBScore, game.teamAName, game.teamBName, game.date)
+        } else {
+            basketballDAO.saveGame(game.id, game.teamAScore, game.teamBScore, game.teamAName, game.teamBName, game.date)
+        }
     }
+
 
     companion object {
         private var INSTANCE: BasketballRepository? = null
