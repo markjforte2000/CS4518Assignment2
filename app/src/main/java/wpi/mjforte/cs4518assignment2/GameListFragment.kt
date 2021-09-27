@@ -55,11 +55,26 @@ class GameListFragment : Fragment() {
             { games ->
                 games?.let {
                     Log.i(TAG, "Got games: ${games.size}")
-                    updateUI(games)
+                    if (arguments != null) {
+                        updateUI(filterGames(getWinningTeamName(requireArguments()), games))
+                    } else {
+                        updateUI(games)
+                    }
                 }
             }
         )
         Log.d(TAG, "Winning Team: ${arguments?.let { getWinningTeamName(it) }}")
+    }
+
+    private fun filterGames(winningTeam: String, games: List<BasketballGame>): List<BasketballGame> {
+        val filteredGames = mutableListOf<BasketballGame>()
+        games.forEach { game ->
+            if (game.teamAName == winningTeam && game.teamAScore > game.teamBScore ||
+                    game.teamBName == winningTeam && game.teamBScore > game.teamAScore) {
+                filteredGames.add(game)
+            }
+        }
+        return filteredGames
     }
 
     private fun updateUI(games: List<BasketballGame>) {
