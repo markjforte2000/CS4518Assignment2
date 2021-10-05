@@ -1,7 +1,14 @@
 package wpi.mjforte.cs4518assignment2
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -11,8 +18,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
+import java.io.File
+import java.io.IOException
+import java.net.URI
+import java.text.SimpleDateFormat
 import java.util.*
 
 private val GAME_ID = "game_id"
@@ -21,6 +34,9 @@ private val TEAM_B_SCORE = "team_b_score"
 private val TEAM_A_NAME = "team_a_name"
 private val TEAM_B_NAME = "team_b_name"
 private val GAME_DATE = "game_date"
+
+private val REQUEST_IMAGE_CAPTURE_TEAM_A = 765
+private val REQUEST_IMAGE_CAPTURE_TEAM_B = 563
 
 class MainFragment : Fragment() {
 
@@ -116,7 +132,50 @@ class MainFragment : Fragment() {
                 .replace(R.id.fragment_container, fragment)
                 .commit()
         }
+        view.findViewById<Button>(R.id.cameraButtonTeamA).setOnClickListener {
+            takePicture(view, REQUEST_IMAGE_CAPTURE_TEAM_A)
+        }
+        view.findViewById<Button>(R.id.cameraButtonTeamB).setOnClickListener {
+            takePicture(view, REQUEST_IMAGE_CAPTURE_TEAM_B)
+        }
         return view
+    }
+
+    private fun takePicture(view: View, id: Int) {
+        Log.d(TAG, "Attempting to take picture for $id")
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {photoIntent ->
+            //photoIntent.resolveActivity(context!!.packageManager)?.also {
+                Log.d(TAG, "TST")
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    Log.d(TAG, "ERROR CREATING FILE: $ex")
+                    null
+                }
+                Log.d(TAG, "Saving image to ${photoFile?.absolutePath}")
+                photoFile?.also {
+                    val photoURI = FileProvider.getUriForFile(
+                        context!!,
+                        "com.example.android.fileprovider",
+                        it
+                    )
+                    Log.d(TAG, "$photoURI")
+                    photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(photoIntent, id)
+                }
+            //}
+        }
+    }
+
+    private lateinit var currentPhotoPath: String
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir = context!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir).apply {
+            currentPhotoPath = absolutePath
+        }
     }
 
     private fun saveGame(model: BasketballState) {
@@ -128,14 +187,11 @@ class MainFragment : Fragment() {
         }.start()
     }
 
-    override fun onStart() {
-        super.onStart()
 
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("WPIFragmentMain", "Received results from Intent")
+        Log.d("WPIFragmentMain", "Received results from Intent: $resultCode")
         if (requestCode == SAVE_ACTIVITY_CODE) {
             Log.d("WPIFragmentMain","Received data from save activity")
             val didSave = data?.let { SaveActivity.getDidSaveResult(it) }
@@ -144,7 +200,36 @@ class MainFragment : Fragment() {
                 val toast = Toast.makeText(context, "Data Saved", Toast.LENGTH_SHORT)
                 toast.show()
             }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE_TEAM_A) {
+            Log.d(TAG, currentPhotoPath)
+            view!!.findViewById<ImageView>(R.id.imageViewTeamA).setImageBitmap(getImage(currentPhotoPath))
+            Toast.makeText(context, "Got Image", Toast.LENGTH_SHORT).show()
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE_TEAM_B) {
+            view!!.findViewById<ImageView>(R.id.imageViewTeamB).setImageBitmap(getImage(currentPhotoPath))
+            Toast.makeText(context, "Got Image", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun getImage(path: String): Bitmap {
+        val exifInterface = ExifInterface(path)
+        var rotation = 0.0f;
+        val orientation = exifInterface.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_NORMAL
+        )
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotation = 90f
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotation = 180f
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotation = 270f
+        }
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        options.inSampleSize = 3
+        val source = BitmapFactory.decodeFile(path)
+        val matrix = Matrix()
+        matrix.postRotate(rotation)
+        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    }
+
 
 }
