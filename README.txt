@@ -1,46 +1,24 @@
-1 Working with Intent: data and control sequence diagram
-2 Working with Intent: intent implementation and Logcat output
-    Part 1 Source directory contains the code for a working app that passes data to a second intent and then
-    returns a result from the intent. The writeup includes screenshots from this app as well as log output showing
-    data being passed
-
-3 Working with Fragment: dynamic fragment embedding
-    Part 2 Source directory contains code for the app that uses an fragment embeded in the main activity
-
-4 Working with RecyclerViewer: ViewModel implementation
-    Part 3 Source directory has a class GameList that is a View Model which randomly generates 100 basketball
-    games on init
-
-5 Working with RecyclerViewer: RecyclerViewer Fragment implementation
-    Part 3 Source directory GameListFragment is a fragment that is embedded in the activity MainActivity
-    on app init
-
-6 Working with RecyclerViewer: child view of the RecyclerViewer implementation
-    Each RecyclerView list iten is a view defined in fragment_list_item_game.xml in the res/layout directory
-    This view is inflated in the GameAdapter inner class of GameListFragment
-
-7 Working with RecyclerViewer: RecyclerViewer Adapter implementation
-    GameListFragment contains a inner class GameAdapter which is used to bind BasketBallGame to a view holder
-
-8 Working with RecyclerViewer: adding the RecyclerViewer to the Main activity
-    The recycler view fragment is attached to the main activity in MainActivity on application init
-
-9 Working with ConstraintLayout: required screenshots
-    Screenshots are shown in pdf
-
-10 Data Persistence with Room: use database to populate the list game fragment
-    Screenshot in pdf shows game list being populated by given database. Code for this is in GameList class
-    as well as the database helper classes BasketballDatabase, BasketballRepository, BasketballDAO and
-    BasketballConverter
-
-11 Data Persistence with Room: write to database
-    150 generated entries are inserted into the database as shown in the pdf writeup. This is handled in the
-    MainFragment class in the saveGame method
-
-12 Supporting Fragment Navigation: refactor to enable fragment navigation
-    Screenshots of fragment navigation are shown in the pdf. This is able to be tested using the submitted
-    application. This is implemented in both the GameListFragment class and the MainFragment class
-
-13 Supporting Fragment Navigation: implementation of fragment data passing
-    Data passing is demonstrated in the logs shown in the pdf as well as in the debug application.
-    This is implemented in the MainFragment and GameListFragment classes
+1 Part 1: camera icons and buttons 10
+    Camera icon is saved in directory as shown in screenshot in writeup
+    Buttons in the app display the icons as show in screenshot
+2 Part 1: launch the camera app 5
+    Clicking camera button on debug app will launch camera
+3 Part 1: store images with FileProvider 20
+    Saved images are shown in screenshot of FileExplorer. Taking a picture
+    will also save the image
+4 Part 1: display the scaled-down bitmaps 10
+    Scaled down images are displayed in debug app. They are created by the getImage
+    function in MainFragment
+5 Part 1: correct bitmap orientation 5
+    Bitmaps are shown in correct orientation regardless of original orientation.
+    They are fixed in the getImage function in MainFragment
+6 Part 2: use Retrofit for fetching HTMLs 10
+    HTML Output part is shown in pdf writeup.
+7 Part 2: retrieve weather info from OpenWeather 20
+    Weather info is shown in pdf writeup and displayed in debug app. It is retrieved in the
+    setWeatherData function in MainFragment
+8 Part 2: integration with Gson 10
+    GSON converter factory is called in the setWeatherData function of MainFragment
+9 Part 2: weather for the current location 10
+    Current location is shown in DebugApp and in sample screenshot. It is retrieved in locationListener
+    in MainFragment and decoded in setWeatherData
